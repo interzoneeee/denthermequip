@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Gestão de Equipamentos - DENtherm
 
-## Getting Started
+Aplicação web para gestão de equipamentos energéticos (Esquentador, Termoacumulador, AC, Caldeira, Bomba de Calor).
 
-First, run the development server:
+## Funcionalidades
 
+- **Adicionar Equipamento**: Formulário dinâmico com validação e upload de PDF.
+- **Pesquisar**: Pesquisa em tempo real por Marca ou Modelo.
+- **Filtrar**: Filtragem por tipo de equipamento.
+- **Listar**: Visualização em grelha com resumo das especificações.
+- **Detalhes**: Página detalhada com opção de download da ficha técnica.
+- **Editar/Eliminar**: Gestão completa do ciclo de vida do equipamento.
+
+## Tecnologias
+
+- Next.js 14+ (App Router)
+- TypeScript
+- Tailwind CSS
+- Zod & React Hook Form
+- Persistência em ficheiro JSON local (`data/equipments.json`)
+
+## Instalação
+
+1. Instalar dependências:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Iniciar servidor de desenvolvimento:
+```bash
+npm run dev
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Aceder a http://localhost:3000
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Deploy no Vercel
 
-## Learn More
+1. Fazer push para um repositório Git (GitHub/GitLab/Bitbucket).
+2. Importar o projeto no Vercel.
+3. O Vercel deteta automaticamente as configurações do Next.js.
+4. **Nota**: Como esta versão usa um ficheiro JSON local para persistência, os dados **não persistirão** entre deploys no Vercel (o sistema de ficheiros é efémero). Para produção real, recomenda-se migrar a função `saveEquipment` em `src/lib/storage.ts` para usar uma base de dados (Postgres) ou Vercel KV.
 
-To learn more about Next.js, take a look at the following resources:
+## Estrutura do Projeto
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `src/app`: Páginas e rotas (App Router).
+- `src/components`: Componentes React reutilizáveis.
+- `src/lib`: Definições de tipos (Zod schemas) e utilitários.
+- `src/actions`: Server Actions para lógica de backend.
+- `data`: Pasta onde o ficheiro `equipments.json` é guardado.
