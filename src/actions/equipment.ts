@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 
 export async function getEquipments(query?: string, type?: string, page: number = 1, limit: number = 9) {
-    const where: Prisma.EquipmentWhereInput = {};
+    const where: any = {};
 
     if (type && type !== "Todos") {
         where.type = type;
