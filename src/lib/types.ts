@@ -16,6 +16,7 @@ const BaseFormSchema = z.object({
     marca: z.string().optional(),
     modelo: z.string().optional(),
     notas: z.string().nullable().optional(),
+    dataFabrico: z.string().nullable().optional(), // ISO date string
     pdf: z.string().nullable().optional(), // Base64 string
     pdfName: z.string().nullable().optional(),
     photo: z.string().nullable().optional(), // Base64 string

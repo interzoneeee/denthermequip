@@ -14,6 +14,7 @@ model Equipment {
   marca     String
   modelo    String
   notas     String?
+  dataFabrico DateTime?
   
   // Media (stored as Base64 for now)
   photo     String?  @db.Text

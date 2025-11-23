@@ -173,6 +173,14 @@ export function EquipmentCard({ equipment }: { equipment: Equipment }) {
                         <div className="grid grid-cols-2 gap-2">
                             {/* Common Fields */}
                             <DataField label="ID" value={equipment.id} className="col-span-2 font-mono text-[10px]" copyable={true} />
+                            {equipment.dataFabrico && (
+                                <DataField
+                                    label="Data Fabrico"
+                                    value={new Date(equipment.dataFabrico).toLocaleDateString()}
+                                    className="col-span-2"
+                                    copyable={true}
+                                />
+                            )}
 
                             {/* Specific Fields based on Type */}
                             {equipment.type === "Esquentador" && (

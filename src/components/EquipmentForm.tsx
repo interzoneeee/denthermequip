@@ -180,6 +180,15 @@ export function EquipmentForm({ initialData }: Props) {
                             </div>
 
                             <div className="col-span-full">
+                                <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Data de Fabricação</label>
+                                <input
+                                    type="date"
+                                    {...register("dataFabrico" as any)}
+                                    className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all outline-none hover:border-slate-700"
+                                />
+                            </div>
+
+                            <div className="col-span-full">
                                 <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Notas</label>
                                 <textarea
                                     {...register("notas")}

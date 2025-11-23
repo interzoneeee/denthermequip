@@ -141,6 +141,15 @@ export default async function EquipmentPage({
                                             <p className="text-2xl font-bold text-white">{equipment.energia}</p>
                                         </div>
                                     )}
+
+                                    {equipment.dataFabrico && (
+                                        <div>
+                                            <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Data Fabrico</p>
+                                            <p className="text-2xl font-bold text-white font-mono">
+                                                {new Date(equipment.dataFabrico).toLocaleDateString()}
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
