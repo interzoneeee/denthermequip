@@ -40,14 +40,14 @@ export function EquipmentCard({ equipment }: { equipment: Equipment }) {
         });
     };
 
-    const copyToClipboard = (text: string | number | undefined, label: string) => {
+    const copyToClipboard = (text: string | number | undefined | null, label: string) => {
         if (!text) return;
         navigator.clipboard.writeText(text.toString());
         setCopiedField(label);
         setTimeout(() => setCopiedField(null), 2000);
     };
 
-    const DataField = ({ label, value, unit = "", className = "", copyable = false }: { label: string, value: string | number | undefined, unit?: string, className?: string, copyable?: boolean }) => {
+    const DataField = ({ label, value, unit = "", className = "", copyable = false }: { label: string, value: string | number | undefined | null, unit?: string, className?: string, copyable?: boolean }) => {
         if (value === undefined || value === null) return null;
         const isCopied = copiedField === label;
 
