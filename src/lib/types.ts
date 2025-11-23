@@ -15,11 +15,11 @@ const BaseFormSchema = z.object({
     type: EquipmentTypeEnum,
     marca: z.string().optional(),
     modelo: z.string().optional(),
-    notas: z.string().optional(),
-    pdf: z.string().optional(), // Base64 string
-    pdfName: z.string().optional(),
-    photo: z.string().optional(), // Base64 string
-    photoName: z.string().optional(),
+    notas: z.string().nullable().optional(),
+    pdf: z.string().nullable().optional(), // Base64 string
+    pdfName: z.string().nullable().optional(),
+    photo: z.string().nullable().optional(), // Base64 string
+    photoName: z.string().nullable().optional(),
 });
 
 // Helper for optional number fields
@@ -43,7 +43,7 @@ export const EsquentadorFormSchema = BaseFormSchema.extend({
         "Pellets (granulados)",
         "Biomassa sólida",
         "Gás butano",
-    ]).optional(),
+    ]).nullable().optional(),
     potencia: requiredNumber,
     rendimentoBase: requiredNumber,
     rendimentoCorrigido: requiredNumber,
@@ -55,7 +55,7 @@ export const TermoacumuladorFormSchema = BaseFormSchema.extend({
     volume: requiredNumber,
     potencia: requiredNumber,
     rendimento: requiredNumber,
-    temQPR: z.boolean().default(false),
+    temQPR: z.preprocess((val) => val === null ? false : val, z.boolean().default(false)),
     valorQPR: optionalNumber,
 });
 
@@ -86,7 +86,7 @@ export const CaldeiraFormSchema = BaseFormSchema.extend({
         "Biomassa sólida",
         "Biomassa líquida",
         "Biomassa gasosa",
-    ]).optional(),
+    ]).nullable().optional(),
     potencia: requiredNumber,
     rendimentoBase: requiredNumber,
     rendimentoCorrigido: requiredNumber,
@@ -95,7 +95,7 @@ export const CaldeiraFormSchema = BaseFormSchema.extend({
 // 5. BOMBA DE CALOR
 export const BombaCalorFormSchema = BaseFormSchema.extend({
     type: z.literal("Bomba de Calor"),
-    energia: z.enum(["Electricidade", "Electricidade vazio", "padrão"]).optional(),
+    energia: z.enum(["Electricidade", "Electricidade vazio", "padrão"]).nullable().optional(),
     volume: optionalNumber,
     potencia: requiredNumber,
     rendimentoBase: requiredNumber,
