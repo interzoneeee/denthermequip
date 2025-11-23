@@ -130,12 +130,7 @@ export function EquipmentForm({ initialData }: Props) {
                 </div>
             )}
 
-            {Object.keys(errors).length > 0 && (
-                <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-4 rounded-xl text-sm flex items-center gap-2 animate-pulse">
-                    <div className="h-2 w-2 rounded-full bg-red-500" />
-                    Por favor verifique os erros no formulário. Campos obrigatórios em falta.
-                </div>
-            )}
+
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {/* Left Column: Basic Info */}
