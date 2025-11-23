@@ -122,7 +122,7 @@ export function EquipmentForm({ initialData }: Props) {
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit as any)} className="max-w-4xl mx-auto space-y-8">
+        <form onSubmit={handleSubmit(onSubmit as any, (errors) => console.log("Validation errors:", errors))} className="max-w-4xl mx-auto space-y-8">
 
             {error && (
                 <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-4 rounded-xl text-sm flex items-center gap-2">
