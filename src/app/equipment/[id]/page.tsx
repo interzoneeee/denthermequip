@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowLeft, Download, Edit } from "lucide-react";
 import { Header } from "@/components/Header";
 import { EquipmentForm } from "@/components/EquipmentForm";
-import { getEquipmentById } from "@/lib/storage";
+import { getEquipmentById } from "@/actions/equipment";
 
 export default async function EquipmentPage({
     params,
