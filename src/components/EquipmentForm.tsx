@@ -164,7 +164,7 @@ export function EquipmentForm({ initialData }: Props) {
                             </div>
 
                             <div className="col-span-1">
-                                <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Marca *</label>
+                                <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Marca</label>
                                 <input
                                     {...register("marca")}
                                     className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all outline-none placeholder:text-slate-600 hover:border-slate-700"
@@ -174,7 +174,7 @@ export function EquipmentForm({ initialData }: Props) {
                             </div>
 
                             <div className="col-span-1">
-                                <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Modelo *</label>
+                                <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Modelo</label>
                                 <input
                                     {...register("modelo")}
                                     className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all outline-none placeholder:text-slate-600 hover:border-slate-700"
@@ -210,7 +210,7 @@ export function EquipmentForm({ initialData }: Props) {
                                     <div className="col-span-1">
                                         <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Energia</label>
                                         <select {...register("energia" as any)} className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none hover:border-slate-700">
-                                            {EsquentadorFormSchema.shape.energia.options.map((opt) => (
+                                            {EsquentadorFormSchema.shape.energia.unwrap().options.map((opt) => (
                                                 <option key={opt} value={opt}>{opt}</option>
                                             ))}
                                         </select>
@@ -302,7 +302,7 @@ export function EquipmentForm({ initialData }: Props) {
                                     <div className="col-span-1">
                                         <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Energia</label>
                                         <select {...register("energia" as any)} className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none hover:border-slate-700">
-                                            {CaldeiraFormSchema.shape.energia.options.map((opt) => (
+                                            {CaldeiraFormSchema.shape.energia.unwrap().options.map((opt) => (
                                                 <option key={opt} value={opt}>{opt}</option>
                                             ))}
                                         </select>
@@ -331,7 +331,7 @@ export function EquipmentForm({ initialData }: Props) {
                                     <div className="col-span-1">
                                         <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Energia</label>
                                         <select {...register("energia" as any)} className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none hover:border-slate-700">
-                                            {BombaCalorFormSchema.shape.energia.options.map((opt) => (
+                                            {BombaCalorFormSchema.shape.energia.unwrap().options.map((opt) => (
                                                 <option key={opt} value={opt}>{opt}</option>
                                             ))}
                                         </select>

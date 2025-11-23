@@ -13,8 +13,8 @@ export type EquipmentType = z.infer<typeof EquipmentTypeEnum>;
 // Base schema for FORM (no system fields)
 const BaseFormSchema = z.object({
     type: EquipmentTypeEnum,
-    marca: z.string().min(1, "Marca é obrigatória"),
-    modelo: z.string().min(1, "Modelo é obrigatório"),
+    marca: z.string().optional(),
+    modelo: z.string().optional(),
     notas: z.string().optional(),
     pdf: z.string().optional(), // Base64 string
     pdfName: z.string().optional(),
@@ -28,8 +28,8 @@ const optionalNumber = z.preprocess(
     z.coerce.number().optional()
 );
 
-// Helper for required number fields
-const requiredNumber = z.coerce.number().min(0, "Valor deve ser positivo");
+// Helper for required number fields - NOW OPTIONAL per user request
+const requiredNumber = optionalNumber;
 
 // 1. ESQUENTADOR
 export const EsquentadorFormSchema = BaseFormSchema.extend({
@@ -43,10 +43,10 @@ export const EsquentadorFormSchema = BaseFormSchema.extend({
         "Pellets (granulados)",
         "Biomassa sólida",
         "Gás butano",
-    ]),
+    ]).optional(),
     potencia: requiredNumber,
-    rendimentoBase: requiredNumber.max(100),
-    rendimentoCorrigido: requiredNumber.max(100),
+    rendimentoBase: requiredNumber,
+    rendimentoCorrigido: requiredNumber,
 });
 
 // 2. TERMOACUMULADOR
@@ -54,12 +54,9 @@ export const TermoacumuladorFormSchema = BaseFormSchema.extend({
     type: z.literal("Termoacumulador"),
     volume: requiredNumber,
     potencia: requiredNumber,
-    rendimento: requiredNumber.max(100),
+    rendimento: requiredNumber,
     temQPR: z.boolean().default(false),
     valorQPR: optionalNumber,
-}).refine((data) => !data.temQPR || (data.temQPR && data.valorQPR !== undefined), {
-    message: "Valor QPR é obrigatório quando QPR está marcado",
-    path: ["valorQPR"],
 });
 
 // 3. AR CONDICIONADO
@@ -89,16 +86,16 @@ export const CaldeiraFormSchema = BaseFormSchema.extend({
         "Biomassa sólida",
         "Biomassa líquida",
         "Biomassa gasosa",
-    ]),
+    ]).optional(),
     potencia: requiredNumber,
-    rendimentoBase: requiredNumber.max(100),
-    rendimentoCorrigido: requiredNumber.max(100),
+    rendimentoBase: requiredNumber,
+    rendimentoCorrigido: requiredNumber,
 });
 
 // 5. BOMBA DE CALOR
 export const BombaCalorFormSchema = BaseFormSchema.extend({
     type: z.literal("Bomba de Calor"),
-    energia: z.enum(["Electricidade", "Electricidade vazio", "padrão"]),
+    energia: z.enum(["Electricidade", "Electricidade vazio", "padrão"]).optional(),
     volume: optionalNumber,
     potencia: requiredNumber,
     rendimentoBase: requiredNumber,
