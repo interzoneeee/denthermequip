@@ -98,7 +98,7 @@ export function EquipmentCard({ equipment }: { equipment: Equipment }) {
                         <>
                             <Image
                                 src={equipment.photo}
-                                alt={equipment.marca}
+                                alt={equipment.marca || "Equipamento"}
                                 fill
                                 className="object-cover opacity-80 group-hover:opacity-100 transition-all duration-500"
                                 sizes="(max-width: 640px) 100vw, 200px"
@@ -128,7 +128,7 @@ export function EquipmentCard({ equipment }: { equipment: Equipment }) {
                                 className="cursor-pointer hover:text-cyan-400 transition-colors group/title w-fit"
                             >
                                 <h3 className="font-bold text-slate-200 text-lg leading-tight truncate flex items-center gap-2">
-                                    {equipment.marca}
+                                    {equipment.marca || "Sem Marca"}
                                     {copiedField === "Marca" && <Check className="h-4 w-4 text-emerald-500" />}
                                 </h3>
                             </div>
@@ -137,7 +137,7 @@ export function EquipmentCard({ equipment }: { equipment: Equipment }) {
                                 className="cursor-pointer hover:text-cyan-400 transition-colors group/subtitle w-fit"
                             >
                                 <p className="text-xs text-slate-500 font-mono mt-1 uppercase tracking-wider flex items-center gap-2">
-                                    {equipment.modelo}
+                                    {equipment.modelo || "Sem Modelo"}
                                     {copiedField === "Modelo" && <Check className="h-3 w-3 text-emerald-500" />}
                                 </p>
                             </div>
