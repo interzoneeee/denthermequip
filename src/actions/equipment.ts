@@ -54,13 +54,21 @@ export async function getEquipmentById(id: string) {
 
 export async function createEquipment(data: Omit<Equipment, "id" | "createdAt" | "updatedAt">) {
     try {
+        // Sanitize data before sending to Prisma
+        const sanitizedData = { ...data };
+
+        // Handle dataFabrico: convert string to Date or null
+        if (typeof sanitizedData.dataFabrico === 'string') {
+            if (sanitizedData.dataFabrico === '') {
+                sanitizedData.dataFabrico = null;
+            } else {
+                // Ensure it's a valid ISO string for Prisma DateTime
+                sanitizedData.dataFabrico = new Date(sanitizedData.dataFabrico).toISOString();
+            }
+        }
+
         const newEquipment = await prisma.equipment.create({
-            data: {
-                ...data,
-                // Ensure optional fields are handled correctly (undefined -> null for Prisma if needed, but Prisma handles undefined as "do not set" or null depending on config)
-                // Actually Prisma create expects null for optional fields if not provided, or undefined to skip.
-                // We pass data directly.
-            } as any,
+            data: sanitizedData as any,
         });
 
         revalidatePath("/");
@@ -74,15 +82,27 @@ export async function createEquipment(data: Omit<Equipment, "id" | "createdAt" |
 export async function updateEquipment(id: string, data: Partial<Equipment>) {
     console.log("Server action updateEquipment called with:", { id, data });
     try {
+        // Sanitize data
+        const sanitizedData = { ...data };
+
+        // Handle dataFabrico
+        if ('dataFabrico' in sanitizedData) {
+            if (sanitizedData.dataFabrico === '' || sanitizedData.dataFabrico === null) {
+                sanitizedData.dataFabrico = null;
+            } else if (typeof sanitizedData.dataFabrico === 'string') {
+                sanitizedData.dataFabrico = new Date(sanitizedData.dataFabrico).toISOString();
+            }
+        }
+
         // If type is changing, we need to clear fields from the old type
-        if (data.type) {
+        if (sanitizedData.type) {
             const currentEquipment = await prisma.equipment.findUnique({
                 where: { id },
                 select: { type: true }
             });
 
-            if (currentEquipment && currentEquipment.type !== data.type) {
-                console.log(`Type changing from ${currentEquipment.type} to ${data.type}. Clearing obsolete fields.`);
+            if (currentEquipment && currentEquipment.type !== sanitizedData.type) {
+                console.log(`Type changing from ${currentEquipment.type} to ${sanitizedData.type}. Clearing obsolete fields.`);
 
                 // Define all technical fields that should be cleared if they don't belong to the new type
                 // For simplicity, we can just set ALL technical fields to null, and then apply the new data
@@ -100,7 +120,7 @@ export async function updateEquipment(id: string, data: Partial<Equipment>) {
 
                 // First clear everything, then apply new data
                 // We merge clearData and data. data takes precedence (contains the new values)
-                const finalData = { ...clearData, ...data };
+                const finalData = { ...clearData, ...sanitizedData };
 
                 await prisma.equipment.update({
                     where: { id },
@@ -116,7 +136,7 @@ export async function updateEquipment(id: string, data: Partial<Equipment>) {
         // Normal update (no type change)
         await prisma.equipment.update({
             where: { id },
-            data: data as any,
+            data: sanitizedData as any,
         });
 
         revalidatePath("/");

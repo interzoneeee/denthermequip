@@ -28,7 +28,10 @@ export function EquipmentForm({ initialData }: Props) {
 
     const form = useForm<EquipmentFormData>({
         resolver: zodResolver(EquipmentFormSchema) as any,
-        defaultValues: initialData || {
+        defaultValues: initialData ? {
+            ...initialData,
+            dataFabrico: initialData.dataFabrico ? new Date(initialData.dataFabrico).toISOString().split('T')[0] : undefined
+        } : {
             type: "Esquentador",
             marca: "",
             modelo: "",

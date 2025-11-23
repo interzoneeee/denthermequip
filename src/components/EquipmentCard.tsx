@@ -176,7 +176,7 @@ export function EquipmentCard({ equipment }: { equipment: Equipment }) {
                             {equipment.dataFabrico && (
                                 <DataField
                                     label="Data Fabrico"
-                                    value={new Date(equipment.dataFabrico).toLocaleDateString()}
+                                    value={new Date(equipment.dataFabrico).toLocaleDateString('pt-PT')}
                                     className="col-span-2"
                                     copyable={true}
                                 />

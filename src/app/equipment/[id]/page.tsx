@@ -146,7 +146,7 @@ export default async function EquipmentPage({
                                         <div>
                                             <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Data Fabrico</p>
                                             <p className="text-2xl font-bold text-white font-mono">
-                                                {new Date(equipment.dataFabrico).toLocaleDateString()}
+                                                {new Date(equipment.dataFabrico).toLocaleDateString('pt-PT')}
                                             </p>
                                         </div>
                                     )}
