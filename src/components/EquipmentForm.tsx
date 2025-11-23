@@ -130,6 +130,13 @@ export function EquipmentForm({ initialData }: Props) {
                 </div>
             )}
 
+            {Object.keys(errors).length > 0 && (
+                <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-4 rounded-xl text-sm flex items-center gap-2 animate-pulse">
+                    <div className="h-2 w-2 rounded-full bg-red-500" />
+                    Por favor verifique os erros no formulário. Campos obrigatórios em falta.
+                </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {/* Left Column: Basic Info */}
                 <div className="md:col-span-2 space-y-6">
@@ -147,7 +154,6 @@ export function EquipmentForm({ initialData }: Props) {
                                 <select
                                     {...register("type")}
                                     className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all outline-none hover:border-slate-700"
-                                    disabled={!!initialData}
                                 >
                                     {EquipmentTypeEnum.options.map((t) => (
                                         <option key={t} value={t}>
