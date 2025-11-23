@@ -90,7 +90,10 @@ export function EquipmentCard({ equipment }: { equipment: Equipment }) {
 
     return (
         <>
-            <div className="group relative bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-2xl overflow-hidden hover:border-cyan-500/30 transition-all duration-300 hover:shadow-[0_0_30px_rgba(6,182,212,0.1)] flex flex-col sm:flex-row h-full">
+            <Link
+                href={`/equipment/${equipment.id}`}
+                className="group relative bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-2xl overflow-hidden hover:border-cyan-500/30 transition-all duration-300 hover:shadow-[0_0_30px_rgba(6,182,212,0.1)] flex flex-col sm:flex-row h-full cursor-pointer"
+            >
 
                 {/* Image Section - Vertical on Desktop */}
                 <div className="relative w-full sm:w-48 h-48 sm:h-auto bg-slate-950 shrink-0 border-b sm:border-b-0 sm:border-r border-slate-800">
@@ -146,6 +149,7 @@ export function EquipmentCard({ equipment }: { equipment: Equipment }) {
                         <div className="flex gap-2 shrink-0">
                             <Link
                                 href={`/equipment/${equipment.id}?edit=true`}
+                                onClick={(e) => e.stopPropagation()}
                                 className="p-2 bg-slate-800/50 border border-slate-700 text-slate-400 hover:text-cyan-400 hover:border-cyan-500/50 rounded-lg transition-all"
                                 title="Editar"
                             >
@@ -221,7 +225,7 @@ export function EquipmentCard({ equipment }: { equipment: Equipment }) {
                         </div>
                     </div>
                 </div>
-            </div>
+            </Link>
 
             <DeleteConfirmation
                 isOpen={showDelete}
