@@ -74,6 +74,46 @@ export async function createEquipment(data: Omit<Equipment, "id" | "createdAt" |
 export async function updateEquipment(id: string, data: Partial<Equipment>) {
     console.log("Server action updateEquipment called with:", { id, data });
     try {
+        // If type is changing, we need to clear fields from the old type
+        if (data.type) {
+            const currentEquipment = await prisma.equipment.findUnique({
+                where: { id },
+                select: { type: true }
+            });
+
+            if (currentEquipment && currentEquipment.type !== data.type) {
+                console.log(`Type changing from ${currentEquipment.type} to ${data.type}. Clearing obsolete fields.`);
+
+                // Define all technical fields that should be cleared if they don't belong to the new type
+                // For simplicity, we can just set ALL technical fields to null, and then apply the new data
+                // The new data will overwrite the nulls for the fields that are actually present in the form
+                const technicalFields = [
+                    "energia", "potencia", "rendimentoBase", "rendimentoCorrigido",
+                    "volume", "rendimento", "temQPR", "valorQPR",
+                    "potenciaArrefecimento", "potenciaAquecimento", "seer", "scop", "cop"
+                ];
+
+                const clearData: any = {};
+                technicalFields.forEach(field => {
+                    clearData[field] = null;
+                });
+
+                // First clear everything, then apply new data
+                // We merge clearData and data. data takes precedence (contains the new values)
+                const finalData = { ...clearData, ...data };
+
+                await prisma.equipment.update({
+                    where: { id },
+                    data: finalData,
+                });
+
+                revalidatePath("/");
+                revalidatePath(`/equipment/${id}`);
+                return { success: true };
+            }
+        }
+
+        // Normal update (no type change)
         await prisma.equipment.update({
             where: { id },
             data: data as any,

@@ -24,8 +24,8 @@ const BaseFormSchema = z.object({
 
 // Helper for optional number fields
 const optionalNumber = z.preprocess(
-    (val) => (val === "" ? undefined : val),
-    z.coerce.number().optional()
+    (val) => (val === "" ? null : val),
+    z.nullable(z.coerce.number())
 );
 
 // Helper for required number fields - NOW OPTIONAL per user request
