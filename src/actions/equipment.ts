@@ -72,6 +72,7 @@ export async function createEquipment(data: Omit<Equipment, "id" | "createdAt" |
 }
 
 export async function updateEquipment(id: string, data: Partial<Equipment>) {
+    console.log("Server action updateEquipment called with:", { id, data });
     try {
         await prisma.equipment.update({
             where: { id },

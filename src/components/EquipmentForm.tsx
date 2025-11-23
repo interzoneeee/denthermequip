@@ -59,6 +59,7 @@ export function EquipmentForm({ initialData }: Props) {
     }, [type, initialData]);
 
     const onSubmit = async (data: EquipmentFormData) => {
+        console.log("Form submitted with data:", data);
         setError(null);
         startTransition(async () => {
             try {
