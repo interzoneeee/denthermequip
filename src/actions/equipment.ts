@@ -57,14 +57,10 @@ export async function createEquipment(data: Omit<Equipment, "id" | "createdAt" |
         // Sanitize data before sending to Prisma
         const sanitizedData = { ...data };
 
-        // Handle dataFabrico: convert string to Date or null
+        // Handle dataFabrico: convert string to Date ISO string if present
         if (typeof sanitizedData.dataFabrico === 'string') {
-            if (sanitizedData.dataFabrico === '') {
-                sanitizedData.dataFabrico = null;
-            } else {
-                // Ensure it's a valid ISO string for Prisma DateTime
-                sanitizedData.dataFabrico = new Date(sanitizedData.dataFabrico).toISOString();
-            }
+            // Ensure it's a valid ISO string for Prisma DateTime
+            sanitizedData.dataFabrico = new Date(sanitizedData.dataFabrico).toISOString();
         }
 
         const newEquipment = await prisma.equipment.create({
@@ -86,12 +82,8 @@ export async function updateEquipment(id: string, data: Partial<Equipment>) {
         const sanitizedData = { ...data };
 
         // Handle dataFabrico
-        if ('dataFabrico' in sanitizedData) {
-            if (sanitizedData.dataFabrico === '' || sanitizedData.dataFabrico === null) {
-                sanitizedData.dataFabrico = null;
-            } else if (typeof sanitizedData.dataFabrico === 'string') {
-                sanitizedData.dataFabrico = new Date(sanitizedData.dataFabrico).toISOString();
-            }
+        if (typeof sanitizedData.dataFabrico === 'string') {
+            sanitizedData.dataFabrico = new Date(sanitizedData.dataFabrico).toISOString();
         }
 
         // If type is changing, we need to clear fields from the old type

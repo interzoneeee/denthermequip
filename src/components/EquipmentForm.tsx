@@ -16,6 +16,9 @@ import {
     EquipmentFormData,
 } from "@/lib/types";
 import { createEquipment, updateEquipment } from "@/actions/equipment";
+import { FormInput } from "@/components/ui/FormInput";
+import { FormSelect } from "@/components/ui/FormSelect";
+import { FormTextarea } from "@/components/ui/FormTextarea";
 
 type Props = {
     initialData?: Equipment;
@@ -134,8 +137,6 @@ export function EquipmentForm({ initialData }: Props) {
                 </div>
             )}
 
-
-
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {/* Left Column: Basic Info */}
                 <div className="md:col-span-2 space-y-6">
@@ -149,57 +150,43 @@ export function EquipmentForm({ initialData }: Props) {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="col-span-full">
-                                <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Tipo de Equipamento</label>
-                                <select
-                                    {...register("type")}
-                                    className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all outline-none hover:border-slate-700"
-                                >
-                                    {EquipmentTypeEnum.options.map((t) => (
-                                        <option key={t} value={t}>
-                                            {t}
-                                        </option>
-                                    ))}
-                                </select>
+                                <FormSelect
+                                    label="Tipo de Equipamento"
+                                    register={register("type")}
+                                    options={EquipmentTypeEnum.options}
+                                    error={errors.type}
+                                />
                             </div>
 
-                            <div className="col-span-1">
-                                <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Marca</label>
-                                <input
-                                    {...register("marca")}
-                                    className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all outline-none placeholder:text-slate-600 hover:border-slate-700"
-                                    placeholder="Ex: Vulcano"
-                                />
-                                {errors.marca && <p className="text-red-400 text-xs mt-1 ml-1">{errors.marca.message}</p>}
-                            </div>
+                            <FormInput
+                                label="Marca"
+                                register={register("marca")}
+                                error={errors.marca}
+                                placeholder="Ex: Vulcano"
+                            />
 
-                            <div className="col-span-1">
-                                <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Modelo</label>
-                                <input
-                                    {...register("modelo")}
-                                    className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all outline-none placeholder:text-slate-600 hover:border-slate-700"
-                                    placeholder="Ex: ZW 24"
-                                />
-                                {errors.modelo && <p className="text-red-400 text-xs mt-1 ml-1">{errors.modelo.message}</p>}
-                            </div>
+                            <FormInput
+                                label="Modelo"
+                                register={register("modelo")}
+                                error={errors.modelo}
+                                placeholder="Ex: ZW 24"
+                            />
 
                             <div className="col-span-full">
-                                <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Data de Fabricação</label>
-                                <input
+                                <FormInput
+                                    label="Data de Fabricação"
                                     type="date"
-                                    {...register("dataFabrico" as any)}
-                                    className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all outline-none hover:border-slate-700"
+                                    register={register("dataFabrico" as any)}
+                                    error={(errors as any).dataFabrico}
                                 />
                             </div>
 
-                            <div className="col-span-full">
-                                <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Notas</label>
-                                <textarea
-                                    {...register("notas")}
-                                    rows={3}
-                                    className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all outline-none placeholder:text-slate-600 resize-none hover:border-slate-700"
-                                    placeholder="Informação adicional..."
-                                />
-                            </div>
+                            <FormTextarea
+                                label="Notas"
+                                register={register("notas")}
+                                rows={3}
+                                placeholder="Informação adicional..."
+                            />
                         </div>
                     </div>
 
@@ -215,50 +202,66 @@ export function EquipmentForm({ initialData }: Props) {
                             {/* ESQUENTADOR */}
                             {type === "Esquentador" && (
                                 <>
-                                    <div className="col-span-1">
-                                        <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Energia</label>
-                                        <select {...register("energia" as any)} className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none hover:border-slate-700">
-                                            {EsquentadorFormSchema.shape.energia.unwrap().unwrap().options.map((opt) => (
-                                                <option key={opt} value={opt}>{opt}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className="col-span-1">
-                                        <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Potência (kW)</label>
-                                        <input type="number" step="0.01" {...register("potencia")} className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none font-mono hover:border-slate-700" />
-                                        {(errors as any).potencia && <p className="text-red-400 text-xs mt-1 ml-1">{(errors as any).potencia.message}</p>}
-                                    </div>
-                                    <div className="col-span-1">
-                                        <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Rendimento Base (%)</label>
-                                        <input type="number" step="0.1" {...register("rendimentoBase" as any)} className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none font-mono hover:border-slate-700" />
-                                        {(errors as any).rendimentoBase && <p className="text-red-400 text-xs mt-1 ml-1">{(errors as any).rendimentoBase.message}</p>}
-                                    </div>
-                                    <div className="col-span-1">
-                                        <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Rendimento Corrigido (%)</label>
-                                        <input type="number" step="0.1" {...register("rendimentoCorrigido" as any)} className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none font-mono hover:border-slate-700" />
-                                        {(errors as any).rendimentoCorrigido && <p className="text-red-400 text-xs mt-1 ml-1">{(errors as any).rendimentoCorrigido.message}</p>}
-                                    </div>
+                                    <FormSelect
+                                        label="Energia"
+                                        register={register("energia" as any)}
+                                        options={EsquentadorFormSchema.shape.energia.unwrap().unwrap().options}
+                                        error={(errors as any).energia}
+                                    />
+                                    <FormInput
+                                        label="Potência (kW)"
+                                        type="number"
+                                        step="0.01"
+                                        register={register("potencia" as any)}
+                                        error={(errors as any).potencia}
+                                        className="font-mono"
+                                    />
+                                    <FormInput
+                                        label="Rendimento Base (%)"
+                                        type="number"
+                                        step="0.1"
+                                        register={register("rendimentoBase" as any)}
+                                        error={(errors as any).rendimentoBase}
+                                        className="font-mono"
+                                    />
+                                    <FormInput
+                                        label="Rendimento Corrigido (%)"
+                                        type="number"
+                                        step="0.1"
+                                        register={register("rendimentoCorrigido" as any)}
+                                        error={(errors as any).rendimentoCorrigido}
+                                        className="font-mono"
+                                    />
                                 </>
                             )}
 
                             {/* TERMOACUMULADOR */}
                             {type === "Termoacumulador" && (
                                 <>
-                                    <div className="col-span-1">
-                                        <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Volume (litros)</label>
-                                        <input type="number" step="0.1" {...register("volume" as any)} className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none font-mono hover:border-slate-700" />
-                                        {(errors as any).volume && <p className="text-red-400 text-xs mt-1 ml-1">{(errors as any).volume.message}</p>}
-                                    </div>
-                                    <div className="col-span-1">
-                                        <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Potência (kW)</label>
-                                        <input type="number" step="0.01" {...register("potencia")} className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none font-mono hover:border-slate-700" />
-                                        {(errors as any).potencia && <p className="text-red-400 text-xs mt-1 ml-1">{(errors as any).potencia.message}</p>}
-                                    </div>
-                                    <div className="col-span-1">
-                                        <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Rendimento (%)</label>
-                                        <input type="number" step="0.1" {...register("rendimento" as any)} className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none font-mono hover:border-slate-700" />
-                                        {(errors as any).rendimento && <p className="text-red-400 text-xs mt-1 ml-1">{(errors as any).rendimento.message}</p>}
-                                    </div>
+                                    <FormInput
+                                        label="Volume (litros)"
+                                        type="number"
+                                        step="0.1"
+                                        register={register("volume" as any)}
+                                        error={(errors as any).volume}
+                                        className="font-mono"
+                                    />
+                                    <FormInput
+                                        label="Potência (kW)"
+                                        type="number"
+                                        step="0.01"
+                                        register={register("potencia" as any)}
+                                        error={(errors as any).potencia}
+                                        className="font-mono"
+                                    />
+                                    <FormInput
+                                        label="Rendimento (%)"
+                                        type="number"
+                                        step="0.1"
+                                        register={register("rendimento" as any)}
+                                        error={(errors as any).rendimento}
+                                        className="font-mono"
+                                    />
                                     <div className="col-span-full flex items-center gap-4 p-4 bg-slate-900/30 rounded-xl border border-slate-800">
                                         <div className="flex items-center gap-3">
                                             <input type="checkbox" id="temQPR" {...register("temQPR" as any)} className="h-5 w-5 rounded border-slate-600 bg-slate-800 text-cyan-500 focus:ring-cyan-500" />
@@ -266,8 +269,15 @@ export function EquipmentForm({ initialData }: Props) {
                                         </div>
                                         {temQPR && (
                                             <div className="flex-1 ml-4">
-                                                <input type="number" step="0.01" {...register("valorQPR" as any)} className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all outline-none font-mono hover:border-slate-700" placeholder="Valor QPR" />
-                                                {(errors as any).valorQPR && <p className="text-red-400 text-xs mt-1 ml-1">{(errors as any).valorQPR.message}</p>}
+                                                <FormInput
+                                                    label=""
+                                                    type="number"
+                                                    step="0.01"
+                                                    register={register("valorQPR" as any)}
+                                                    error={(errors as any).valorQPR}
+                                                    placeholder="Valor QPR"
+                                                    className="font-mono mt-0"
+                                                />
                                             </div>
                                         )}
                                     </div>
@@ -277,29 +287,50 @@ export function EquipmentForm({ initialData }: Props) {
                             {/* AR CONDICIONADO */}
                             {type === "Ar Condicionado" && (
                                 <>
-                                    <div className="col-span-1">
-                                        <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Potência Arrefecimento (kW)</label>
-                                        <input type="number" step="0.01" {...register("potenciaArrefecimento" as any)} className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none font-mono hover:border-slate-700" />
-                                        {(errors as any).potenciaArrefecimento && <p className="text-red-400 text-xs mt-1 ml-1">{(errors as any).potenciaArrefecimento.message}</p>}
-                                    </div>
-                                    <div className="col-span-1">
-                                        <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Potência Aquecimento (kW)</label>
-                                        <input type="number" step="0.01" {...register("potenciaAquecimento" as any)} className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none font-mono hover:border-slate-700" />
-                                        {(errors as any).potenciaAquecimento && <p className="text-red-400 text-xs mt-1 ml-1">{(errors as any).potenciaAquecimento.message}</p>}
-                                    </div>
-                                    <div className="col-span-1">
-                                        <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">SEER (Arrefecimento)</label>
-                                        <input type="number" step="0.01" {...register("seer" as any)} className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none font-mono hover:border-slate-700" placeholder="Opcional" />
-                                    </div>
-                                    <div className="col-span-1">
-                                        <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">SCOP (Aquecimento)</label>
-                                        <input type="number" step="0.01" {...register("scop" as any)} className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none font-mono hover:border-slate-700" placeholder="Opcional" />
-                                    </div>
+                                    <FormInput
+                                        label="Potência Arrefecimento (kW)"
+                                        type="number"
+                                        step="0.01"
+                                        register={register("potenciaArrefecimento" as any)}
+                                        error={(errors as any).potenciaArrefecimento}
+                                        className="font-mono"
+                                    />
+                                    <FormInput
+                                        label="Potência Aquecimento (kW)"
+                                        type="number"
+                                        step="0.01"
+                                        register={register("potenciaAquecimento" as any)}
+                                        error={(errors as any).potenciaAquecimento}
+                                        className="font-mono"
+                                    />
+                                    <FormInput
+                                        label="SEER (Arrefecimento)"
+                                        type="number"
+                                        step="0.01"
+                                        register={register("seer" as any)}
+                                        error={(errors as any).seer}
+                                        placeholder="Opcional"
+                                        className="font-mono"
+                                    />
+                                    <FormInput
+                                        label="SCOP (Aquecimento)"
+                                        type="number"
+                                        step="0.01"
+                                        register={register("scop" as any)}
+                                        error={(errors as any).scop}
+                                        placeholder="Opcional"
+                                        className="font-mono"
+                                    />
                                     {(!seer && !scop) && (
-                                        <div className="col-span-1">
-                                            <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">COP</label>
-                                            <input type="number" step="0.01" {...register("cop" as any)} className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none font-mono hover:border-slate-700" placeholder="Só se SEER/SCOP vazios" />
-                                        </div>
+                                        <FormInput
+                                            label="COP"
+                                            type="number"
+                                            step="0.01"
+                                            register={register("cop" as any)}
+                                            error={(errors as any).cop}
+                                            placeholder="Só se SEER/SCOP vazios"
+                                            className="font-mono"
+                                        />
                                     )}
                                 </>
                             )}
@@ -307,67 +338,89 @@ export function EquipmentForm({ initialData }: Props) {
                             {/* CALDEIRA */}
                             {type === "Caldeira" && (
                                 <>
-                                    <div className="col-span-1">
-                                        <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Energia</label>
-                                        <select {...register("energia" as any)} className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none hover:border-slate-700">
-                                            {CaldeiraFormSchema.shape.energia.unwrap().unwrap().options.map((opt) => (
-                                                <option key={opt} value={opt}>{opt}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className="col-span-1">
-                                        <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Potência (kW)</label>
-                                        <input type="number" step="0.01" {...register("potencia")} className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none font-mono hover:border-slate-700" />
-                                        {(errors as any).potencia && <p className="text-red-400 text-xs mt-1 ml-1">{(errors as any).potencia.message}</p>}
-                                    </div>
-                                    <div className="col-span-1">
-                                        <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Rendimento Base (%)</label>
-                                        <input type="number" step="0.1" {...register("rendimentoBase" as any)} className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none font-mono hover:border-slate-700" />
-                                        {(errors as any).rendimentoBase && <p className="text-red-400 text-xs mt-1 ml-1">{(errors as any).rendimentoBase.message}</p>}
-                                    </div>
-                                    <div className="col-span-1">
-                                        <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Rendimento Corrigido (%)</label>
-                                        <input type="number" step="0.1" {...register("rendimentoCorrigido" as any)} className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none font-mono hover:border-slate-700" />
-                                        {(errors as any).rendimentoCorrigido && <p className="text-red-400 text-xs mt-1 ml-1">{(errors as any).rendimentoCorrigido.message}</p>}
-                                    </div>
+                                    <FormSelect
+                                        label="Energia"
+                                        register={register("energia" as any)}
+                                        options={CaldeiraFormSchema.shape.energia.unwrap().unwrap().options}
+                                        error={(errors as any).energia}
+                                    />
+                                    <FormInput
+                                        label="Potência (kW)"
+                                        type="number"
+                                        step="0.01"
+                                        register={register("potencia" as any)}
+                                        error={(errors as any).potencia}
+                                        className="font-mono"
+                                    />
+                                    <FormInput
+                                        label="Rendimento Base (%)"
+                                        type="number"
+                                        step="0.1"
+                                        register={register("rendimentoBase" as any)}
+                                        error={(errors as any).rendimentoBase}
+                                        className="font-mono"
+                                    />
+                                    <FormInput
+                                        label="Rendimento Corrigido (%)"
+                                        type="number"
+                                        step="0.1"
+                                        register={register("rendimentoCorrigido" as any)}
+                                        error={(errors as any).rendimentoCorrigido}
+                                        className="font-mono"
+                                    />
                                 </>
                             )}
 
                             {/* BOMBA DE CALOR */}
                             {type === "Bomba de Calor" && (
                                 <>
-                                    <div className="col-span-1">
-                                        <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Energia</label>
-                                        <select {...register("energia" as any)} className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none hover:border-slate-700">
-                                            {BombaCalorFormSchema.shape.energia.unwrap().unwrap().options.map((opt) => (
-                                                <option key={opt} value={opt}>{opt}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className="col-span-1">
-                                        <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Volume (litros)</label>
-                                        <input type="number" step="0.1" {...register("volume" as any)} className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none font-mono hover:border-slate-700" placeholder="Opcional" />
-                                    </div>
-                                    <div className="col-span-1">
-                                        <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Potência (kW)</label>
-                                        <input type="number" step="0.01" {...register("potencia")} className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none font-mono hover:border-slate-700" />
-                                        {(errors as any).potencia && <p className="text-red-400 text-xs mt-1 ml-1">{(errors as any).potencia.message}</p>}
-                                    </div>
-                                    <div className="col-span-1">
-                                        <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Rendimento Base</label>
-                                        <input type="number" step="0.01" {...register("rendimentoBase" as any)} className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none font-mono hover:border-slate-700" />
-                                        {(errors as any).rendimentoBase && <p className="text-red-400 text-xs mt-1 ml-1">{(errors as any).rendimentoBase.message}</p>}
-                                    </div>
-                                    <div className="col-span-1">
-                                        <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Rendimento Corrigido</label>
-                                        <input type="number" step="0.01" {...register("rendimentoCorrigido" as any)} className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none font-mono hover:border-slate-700" />
-                                        {(errors as any).rendimentoCorrigido && <p className="text-red-400 text-xs mt-1 ml-1">{(errors as any).rendimentoCorrigido.message}</p>}
-                                    </div>
-                                    <div className="col-span-1">
-                                        <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">COP</label>
-                                        <input type="number" step="0.01" {...register("cop" as any)} className="w-full rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none font-mono hover:border-slate-700" />
-                                        {(errors as any).cop && <p className="text-red-400 text-xs mt-1 ml-1">{(errors as any).cop.message}</p>}
-                                    </div>
+                                    <FormSelect
+                                        label="Energia"
+                                        register={register("energia" as any)}
+                                        options={BombaCalorFormSchema.shape.energia.unwrap().unwrap().options}
+                                        error={(errors as any).energia}
+                                    />
+                                    <FormInput
+                                        label="Volume (litros)"
+                                        type="number"
+                                        step="0.1"
+                                        register={register("volume" as any)}
+                                        error={(errors as any).volume}
+                                        placeholder="Opcional"
+                                        className="font-mono"
+                                    />
+                                    <FormInput
+                                        label="Potência (kW)"
+                                        type="number"
+                                        step="0.01"
+                                        register={register("potencia" as any)}
+                                        error={(errors as any).potencia}
+                                        className="font-mono"
+                                    />
+                                    <FormInput
+                                        label="Rendimento Base"
+                                        type="number"
+                                        step="0.01"
+                                        register={register("rendimentoBase" as any)}
+                                        error={(errors as any).rendimentoBase}
+                                        className="font-mono"
+                                    />
+                                    <FormInput
+                                        label="Rendimento Corrigido"
+                                        type="number"
+                                        step="0.01"
+                                        register={register("rendimentoCorrigido" as any)}
+                                        error={(errors as any).rendimentoCorrigido}
+                                        className="font-mono"
+                                    />
+                                    <FormInput
+                                        label="COP"
+                                        type="number"
+                                        step="0.01"
+                                        register={register("cop" as any)}
+                                        error={(errors as any).cop}
+                                        className="font-mono"
+                                    />
                                 </>
                             )}
                         </div>

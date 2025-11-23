@@ -10,18 +10,11 @@ export const EquipmentTypeEnum = z.enum([
 
 export type EquipmentType = z.infer<typeof EquipmentTypeEnum>;
 
-// Base schema for FORM (no system fields)
-const BaseFormSchema = z.object({
-    type: EquipmentTypeEnum,
-    marca: z.string().optional(),
-    modelo: z.string().optional(),
-    notas: z.string().nullable().optional(),
-    dataFabrico: z.string().nullable().optional(), // ISO date string
-    pdf: z.string().nullable().optional(), // Base64 string
-    pdfName: z.string().nullable().optional(),
-    photo: z.string().nullable().optional(), // Base64 string
-    photoName: z.string().nullable().optional(),
-});
+// Helper for optional string fields (converts "" to null)
+const optionalString = z.preprocess(
+    (val) => (val === "" ? null : val),
+    z.string().nullable().optional()
+);
 
 // Helper for optional number fields
 const optionalNumber = z.preprocess(
@@ -31,6 +24,19 @@ const optionalNumber = z.preprocess(
 
 // Helper for required number fields - NOW OPTIONAL per user request
 const requiredNumber = optionalNumber;
+
+// Base schema for FORM (no system fields)
+const BaseFormSchema = z.object({
+    type: EquipmentTypeEnum,
+    marca: optionalString,
+    modelo: optionalString,
+    notas: optionalString,
+    dataFabrico: optionalString, // ISO date string
+    pdf: optionalString, // Base64 string
+    pdfName: optionalString,
+    photo: optionalString, // Base64 string
+    photoName: optionalString,
+});
 
 // 1. ESQUENTADOR
 export const EsquentadorFormSchema = BaseFormSchema.extend({
