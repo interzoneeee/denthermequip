@@ -10,15 +10,15 @@ export const EquipmentTypeEnum = z.enum([
 
 export type EquipmentType = z.infer<typeof EquipmentTypeEnum>;
 
-// Helper for optional string fields (converts "" to null)
+// Helper for optional string fields (converts "" and undefined to null)
 const optionalString = z.preprocess(
-    (val) => (val === "" ? null : val),
+    (val) => (val === "" || val === undefined ? null : val),
     z.string().nullable().optional()
 );
 
-// Helper for optional number fields
+// Helper for optional number fields (converts "", undefined, and null to null)
 const optionalNumber = z.preprocess(
-    (val) => (val === "" ? null : val),
+    (val) => (val === "" || val === undefined || val === null ? null : val),
     z.nullable(z.coerce.number()).optional()
 );
 
@@ -62,7 +62,10 @@ export const TermoacumuladorFormSchema = BaseFormSchema.extend({
     volume: requiredNumber,
     potencia: requiredNumber,
     rendimento: requiredNumber,
-    temQPR: z.preprocess((val) => val === null ? false : val, z.boolean().default(false)),
+    temQPR: z.preprocess(
+        (val) => (val === null || val === undefined || val === false || val === "" ? false : Boolean(val)),
+        z.boolean().default(false)
+    ),
     valorQPR: optionalNumber,
 });
 

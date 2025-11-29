@@ -25,6 +25,19 @@ type Props = {
     initialData?: Equipment;
 };
 
+// Helper function to safely format date for input[type="date"]
+function formatDateForInput(dateString: string | null | undefined): string | undefined {
+    if (!dateString) return undefined;
+    try {
+        const date = new Date(dateString);
+        // Check if date is valid
+        if (isNaN(date.getTime())) return undefined;
+        return date.toISOString().split('T')[0];
+    } catch {
+        return undefined;
+    }
+}
+
 export function EquipmentForm({ initialData }: Props) {
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
@@ -34,7 +47,7 @@ export function EquipmentForm({ initialData }: Props) {
         resolver: zodResolver(EquipmentFormSchema) as unknown as Resolver<FlatEquipmentFormData>,
         defaultValues: initialData ? {
             ...initialData,
-            dataFabrico: initialData.dataFabrico ? new Date(initialData.dataFabrico).toISOString().split('T')[0] : undefined
+            dataFabrico: formatDateForInput(initialData.dataFabrico)
         } : {
             type: "Esquentador",
             marca: "",
@@ -70,19 +83,18 @@ export function EquipmentForm({ initialData }: Props) {
         setError(null);
         startTransition(async () => {
             try {
-                // We cast back to EquipmentFormData because we know the Zod resolver validated it
-                // but TypeScript doesn't know that the Flat type satisfies the Discriminated Union constraints
-                // after validation. However, for the server action, we can just pass the data.
+                // Data has been validated by Zod resolver, safe to pass to server actions
+                // The server will re-validate with EquipmentFormSchema for security
                 if (initialData) {
-                    await updateEquipment(initialData.id, data as EquipmentFormData);
+                    await updateEquipment(initialData.id, data);
                 } else {
-                    await createEquipment(data as EquipmentFormData);
+                    await createEquipment(data);
                 }
                 router.push("/");
                 router.refresh();
             } catch (e) {
                 console.error(e);
-                setError("Ocorreu um erro ao guardar o equipamento.");
+                setError(e instanceof Error ? e.message : "Ocorreu um erro ao guardar o equipamento.");
             }
         });
     };

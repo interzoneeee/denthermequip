@@ -6,6 +6,34 @@ import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
+type PrismaEquipment = {
+    id: string;
+    type: string;
+    marca: string;
+    modelo: string;
+    notas: string | null;
+    dataFabrico: Date | null;
+    photo: string | null;
+    photoName: string | null;
+    pdf: string | null;
+    pdfName: string | null;
+    energia: string | null;
+    potencia: number | null;
+    rendimentoBase: number | null;
+    rendimentoCorrigido: number | null;
+    volume: number | null;
+    rendimento: number | null;
+    temQPR: boolean | null;
+    valorQPR: number | null;
+    potenciaArrefecimento: number | null;
+    potenciaAquecimento: number | null;
+    seer: number | null;
+    scop: number | null;
+    cop: number | null;
+    createdAt: Date;
+    updatedAt: Date;
+};
+
 export async function getEquipments(query?: string, type?: string, page: number = 1, limit: number = 9) {
     const where: any = {};
 
@@ -36,7 +64,7 @@ export async function getEquipments(query?: string, type?: string, page: number 
     // Cast Prisma result to Equipment type (handling nulls/undefined compatibility if needed)
     // Prisma returns null for optional fields, Zod might be lenient or we might need to map.
     // For now, assuming direct compatibility or simple casting is enough as JSON serialization handles nulls.
-    const safeEquipments = equipments.map(eq => ({
+    const safeEquipments = equipments.map((eq: PrismaEquipment) => ({
         ...eq,
         dataFabrico: eq.dataFabrico ? eq.dataFabrico.toISOString() : null,
         createdAt: eq.createdAt.toISOString(),
@@ -71,24 +99,21 @@ export async function createEquipment(data: Omit<Equipment, "id" | "createdAt" |
         // Validate data with Zod
         const validatedData = EquipmentFormSchema.parse(data);
 
-        // Sanitize data before sending to Prisma
-        const sanitizedData = { ...validatedData };
-
         // Handle dataFabrico: convert string to Date ISO string if present
         // Prisma expects a Date object or ISO string for DateTime fields
-        // We'll use ISO string which Prisma Client handles
         let dataFabrico: string | Date | null = null;
-        if (sanitizedData.dataFabrico) {
-            dataFabrico = new Date(sanitizedData.dataFabrico).toISOString();
+        if (validatedData.dataFabrico) {
+            dataFabrico = new Date(validatedData.dataFabrico).toISOString();
         }
 
-        const prismaData: any = {
-            ...sanitizedData,
-            dataFabrico
-        };
+        // Prepare data for Prisma - remove dataFabrico from spread and add it separately
+        const { dataFabrico: _, ...restData } = validatedData;
 
         const newEquipment = await prisma.equipment.create({
-            data: prismaData,
+            data: {
+                ...restData,
+                dataFabrico,
+            },
         });
 
         revalidatePath("/");
@@ -96,14 +121,13 @@ export async function createEquipment(data: Omit<Equipment, "id" | "createdAt" |
     } catch (error) {
         console.error("Error in createEquipment:", error);
         if (error instanceof z.ZodError) {
-            const issues = error.issues || (error as any).errors;
-            throw new Error(`Erro de validação: ${issues.map((e: any) => e.message).join(", ")}`);
+            throw new Error(`Erro de validação: ${error.issues.map((e) => e.message).join(", ")}`);
         }
         throw error;
     }
 }
 
-export async function updateEquipment(id: string, data: Partial<Equipment>) {
+export async function updateEquipment(id: string, data: Partial<Omit<Equipment, "id" | "createdAt" | "updatedAt">>) {
     console.log("Server action updateEquipment called with:", { id, data });
     try {
         // Fetch current equipment to merge and validate
@@ -120,25 +144,21 @@ export async function updateEquipment(id: string, data: Partial<Equipment>) {
         // Merge current data with new data
         const mergedData = { ...currentFormData, ...data };
 
-        // Validate merged data
-        // We cast to any because mergedData might have extra fields like id/createdAt which Zod strips
-        const validatedData = EquipmentFormSchema.parse(mergedData as any);
+        // Validate merged data - Zod will strip extra fields like id/createdAt automatically
+        const validatedData = EquipmentFormSchema.parse(mergedData);
 
-        // Prepare data for Prisma
-        const sanitizedData = { ...validatedData };
+        // Handle dataFabrico: convert string to Date ISO string if present
         let dataFabrico: string | Date | null = null;
-        if (sanitizedData.dataFabrico) {
-            dataFabrico = new Date(sanitizedData.dataFabrico).toISOString();
+        if (validatedData.dataFabrico) {
+            dataFabrico = new Date(validatedData.dataFabrico).toISOString();
         }
 
-        const prismaData: any = {
-            ...sanitizedData,
-            dataFabrico
-        };
+        // Prepare data for Prisma - remove dataFabrico from spread and add it separately
+        const { dataFabrico: _, ...restData } = validatedData;
 
         // If type is changing, we need to clear fields from the old type
-        if (currentEquipment.type !== sanitizedData.type) {
-            console.log(`Type changing from ${currentEquipment.type} to ${sanitizedData.type}. Clearing obsolete fields.`);
+        if (currentEquipment.type !== validatedData.type) {
+            console.log(`Type changing from ${currentEquipment.type} to ${validatedData.type}. Clearing obsolete fields.`);
 
             const technicalFields = [
                 "energia", "potencia", "rendimentoBase", "rendimentoCorrigido",
@@ -146,13 +166,17 @@ export async function updateEquipment(id: string, data: Partial<Equipment>) {
                 "potenciaArrefecimento", "potenciaAquecimento", "seer", "scop", "cop"
             ];
 
-            const clearData: any = {};
+            const clearData: Record<string, null> = {};
             technicalFields.forEach(field => {
                 clearData[field] = null;
             });
 
-            // Merge clearData with prismaData. prismaData takes precedence for new values.
-            const finalData = { ...clearData, ...prismaData };
+            // Merge clearData with new data. New data takes precedence.
+            const finalData = {
+                ...clearData,
+                ...restData,
+                dataFabrico,
+            };
 
             await prisma.equipment.update({
                 where: { id },
@@ -162,7 +186,10 @@ export async function updateEquipment(id: string, data: Partial<Equipment>) {
             // Normal update
             await prisma.equipment.update({
                 where: { id },
-                data: prismaData,
+                data: {
+                    ...restData,
+                    dataFabrico,
+                },
             });
         }
 
@@ -172,8 +199,7 @@ export async function updateEquipment(id: string, data: Partial<Equipment>) {
     } catch (error) {
         console.error("Error in updateEquipment:", error);
         if (error instanceof z.ZodError) {
-            const issues = error.issues || (error as any).errors;
-            throw new Error(`Erro de validação: ${issues.map((e: any) => e.message).join(", ")}`);
+            throw new Error(`Erro de validação: ${error.issues.map((e) => e.message).join(", ")}`);
         }
         throw error;
     }
