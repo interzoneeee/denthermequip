@@ -28,8 +28,8 @@ const requiredNumber = optionalNumber;
 // Base schema for FORM (no system fields)
 const BaseFormSchema = z.object({
     type: EquipmentTypeEnum,
-    marca: optionalString,
-    modelo: optionalString,
+    marca: z.string().min(1, "Marca é obrigatória"),
+    modelo: z.string().min(1, "Modelo é obrigatório"),
     notas: optionalString,
     dataFabrico: optionalString, // ISO date string
     pdf: optionalString, // Base64 string
@@ -134,6 +134,31 @@ export type ACFormData = z.infer<typeof ACFormSchema>;
 export type CaldeiraFormData = z.infer<typeof CaldeiraFormSchema>;
 export type BombaCalorFormData = z.infer<typeof BombaCalorFormSchema>;
 
-// Re-export old names for compatibility if needed, or just rely on Equipment type
-// We removed EquipmentSchema as a Zod schema for the full object because we don't validate the full object on client usually.
-// If we need it, we can define it, but for now Equipment type is sufficient.
+// Flat type for React Hook Form to avoid "as any" when accessing fields that don't exist in all types
+export type FlatEquipmentFormData = {
+    type: EquipmentType;
+    marca: string;
+    modelo: string;
+    notas?: string | null;
+    dataFabrico?: string | null;
+    pdf?: string | null;
+    pdfName?: string | null;
+    photo?: string | null;
+    photoName?: string | null;
+
+    // Union of all technical fields
+    energia?: string | null;
+    potencia?: number | null;
+    rendimentoBase?: number | null;
+    rendimentoCorrigido?: number | null;
+    volume?: number | null;
+    rendimento?: number | null;
+    temQPR?: boolean | null;
+    valorQPR?: number | null;
+    potenciaArrefecimento?: number | null;
+    potenciaAquecimento?: number | null;
+    seer?: number | null;
+    scop?: number | null;
+    cop?: number | null;
+};
+

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { Loader2, Upload, FileText, X, Image as ImageIcon, Settings, Wrench, Camera } from "lucide-react";
@@ -14,6 +14,7 @@ import {
     BombaCalorFormSchema,
     EquipmentFormSchema,
     EquipmentFormData,
+    FlatEquipmentFormData,
 } from "@/lib/types";
 import { createEquipment, updateEquipment } from "@/actions/equipment";
 import { FormInput } from "@/components/ui/FormInput";
@@ -29,8 +30,8 @@ export function EquipmentForm({ initialData }: Props) {
     const [isPending, startTransition] = useTransition();
     const [error, setError] = useState<string | null>(null);
 
-    const form = useForm<EquipmentFormData>({
-        resolver: zodResolver(EquipmentFormSchema) as any,
+    const form = useForm<FlatEquipmentFormData>({
+        resolver: zodResolver(EquipmentFormSchema) as unknown as Resolver<FlatEquipmentFormData>,
         defaultValues: initialData ? {
             ...initialData,
             dataFabrico: initialData.dataFabrico ? new Date(initialData.dataFabrico).toISOString().split('T')[0] : undefined
@@ -39,7 +40,7 @@ export function EquipmentForm({ initialData }: Props) {
             marca: "",
             modelo: "",
             notas: "",
-        } as any,
+        },
     });
 
     const {
@@ -51,9 +52,9 @@ export function EquipmentForm({ initialData }: Props) {
     } = form;
 
     const type = watch("type");
-    const temQPR = watch("temQPR" as any);
-    const seer = watch("seer" as any);
-    const scop = watch("scop" as any);
+    const temQPR = watch("temQPR");
+    const seer = watch("seer");
+    const scop = watch("scop");
     const pdfName = watch("pdfName");
     const photo = watch("photo");
     const photoName = watch("photoName");
@@ -64,15 +65,18 @@ export function EquipmentForm({ initialData }: Props) {
         }
     }, [type, initialData]);
 
-    const onSubmit = async (data: EquipmentFormData) => {
+    const onSubmit = async (data: FlatEquipmentFormData) => {
         console.log("Form submitted with data:", data);
         setError(null);
         startTransition(async () => {
             try {
+                // We cast back to EquipmentFormData because we know the Zod resolver validated it
+                // but TypeScript doesn't know that the Flat type satisfies the Discriminated Union constraints
+                // after validation. However, for the server action, we can just pass the data.
                 if (initialData) {
-                    await updateEquipment(initialData.id, data);
+                    await updateEquipment(initialData.id, data as EquipmentFormData);
                 } else {
-                    await createEquipment(data);
+                    await createEquipment(data as EquipmentFormData);
                 }
                 router.push("/");
                 router.refresh();
@@ -128,7 +132,7 @@ export function EquipmentForm({ initialData }: Props) {
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit as any, (errors) => console.log("Validation errors:", errors))} className="max-w-4xl mx-auto space-y-8">
+        <form onSubmit={handleSubmit(onSubmit, (errors) => console.log("Validation errors:", errors))} className="max-w-4xl mx-auto space-y-8">
 
             {error && (
                 <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-4 rounded-xl text-sm flex items-center gap-2">
@@ -159,14 +163,14 @@ export function EquipmentForm({ initialData }: Props) {
                             </div>
 
                             <FormInput
-                                label="Marca"
+                                label="Marca *"
                                 register={register("marca")}
                                 error={errors.marca}
                                 placeholder="Ex: Vulcano"
                             />
 
                             <FormInput
-                                label="Modelo"
+                                label="Modelo *"
                                 register={register("modelo")}
                                 error={errors.modelo}
                                 placeholder="Ex: ZW 24"
@@ -176,8 +180,8 @@ export function EquipmentForm({ initialData }: Props) {
                                 <FormInput
                                     label="Data de Fabricação"
                                     type="date"
-                                    register={register("dataFabrico" as any)}
-                                    error={(errors as any).dataFabrico}
+                                    register={register("dataFabrico")}
+                                    error={errors.dataFabrico}
                                 />
                             </div>
 
@@ -204,32 +208,32 @@ export function EquipmentForm({ initialData }: Props) {
                                 <>
                                     <FormSelect
                                         label="Energia"
-                                        register={register("energia" as any)}
+                                        register={register("energia")}
                                         options={EsquentadorFormSchema.shape.energia.unwrap().unwrap().options}
-                                        error={(errors as any).energia}
+                                        error={errors.energia}
                                     />
                                     <FormInput
                                         label="Potência (kW)"
                                         type="number"
                                         step="0.01"
-                                        register={register("potencia" as any)}
-                                        error={(errors as any).potencia}
+                                        register={register("potencia")}
+                                        error={errors.potencia}
                                         className="font-mono"
                                     />
                                     <FormInput
                                         label="Rendimento Base (%)"
                                         type="number"
                                         step="0.1"
-                                        register={register("rendimentoBase" as any)}
-                                        error={(errors as any).rendimentoBase}
+                                        register={register("rendimentoBase")}
+                                        error={errors.rendimentoBase}
                                         className="font-mono"
                                     />
                                     <FormInput
                                         label="Rendimento Corrigido (%)"
                                         type="number"
                                         step="0.1"
-                                        register={register("rendimentoCorrigido" as any)}
-                                        error={(errors as any).rendimentoCorrigido}
+                                        register={register("rendimentoCorrigido")}
+                                        error={errors.rendimentoCorrigido}
                                         className="font-mono"
                                     />
                                 </>
@@ -242,29 +246,29 @@ export function EquipmentForm({ initialData }: Props) {
                                         label="Volume (litros)"
                                         type="number"
                                         step="0.1"
-                                        register={register("volume" as any)}
-                                        error={(errors as any).volume}
+                                        register={register("volume")}
+                                        error={errors.volume}
                                         className="font-mono"
                                     />
                                     <FormInput
                                         label="Potência (kW)"
                                         type="number"
                                         step="0.01"
-                                        register={register("potencia" as any)}
-                                        error={(errors as any).potencia}
+                                        register={register("potencia")}
+                                        error={errors.potencia}
                                         className="font-mono"
                                     />
                                     <FormInput
                                         label="Rendimento (%)"
                                         type="number"
                                         step="0.1"
-                                        register={register("rendimento" as any)}
-                                        error={(errors as any).rendimento}
+                                        register={register("rendimento")}
+                                        error={errors.rendimento}
                                         className="font-mono"
                                     />
                                     <div className="col-span-full flex items-center gap-4 p-4 bg-slate-900/30 rounded-xl border border-slate-800">
                                         <div className="flex items-center gap-3">
-                                            <input type="checkbox" id="temQPR" {...register("temQPR" as any)} className="h-5 w-5 rounded border-slate-600 bg-slate-800 text-cyan-500 focus:ring-cyan-500" />
+                                            <input type="checkbox" id="temQPR" {...register("temQPR")} className="h-5 w-5 rounded border-slate-600 bg-slate-800 text-cyan-500 focus:ring-cyan-500" />
                                             <label htmlFor="temQPR" className="text-sm font-medium text-slate-300">Tem QPR?</label>
                                         </div>
                                         {temQPR && (
@@ -273,8 +277,8 @@ export function EquipmentForm({ initialData }: Props) {
                                                     label=""
                                                     type="number"
                                                     step="0.01"
-                                                    register={register("valorQPR" as any)}
-                                                    error={(errors as any).valorQPR}
+                                                    register={register("valorQPR")}
+                                                    error={errors.valorQPR}
                                                     placeholder="Valor QPR"
                                                     className="font-mono mt-0"
                                                 />
@@ -291,24 +295,24 @@ export function EquipmentForm({ initialData }: Props) {
                                         label="Potência Arrefecimento (kW)"
                                         type="number"
                                         step="0.01"
-                                        register={register("potenciaArrefecimento" as any)}
-                                        error={(errors as any).potenciaArrefecimento}
+                                        register={register("potenciaArrefecimento")}
+                                        error={errors.potenciaArrefecimento}
                                         className="font-mono"
                                     />
                                     <FormInput
                                         label="Potência Aquecimento (kW)"
                                         type="number"
                                         step="0.01"
-                                        register={register("potenciaAquecimento" as any)}
-                                        error={(errors as any).potenciaAquecimento}
+                                        register={register("potenciaAquecimento")}
+                                        error={errors.potenciaAquecimento}
                                         className="font-mono"
                                     />
                                     <FormInput
                                         label="SEER (Arrefecimento)"
                                         type="number"
                                         step="0.01"
-                                        register={register("seer" as any)}
-                                        error={(errors as any).seer}
+                                        register={register("seer")}
+                                        error={errors.seer}
                                         placeholder="Opcional"
                                         className="font-mono"
                                     />
@@ -316,8 +320,8 @@ export function EquipmentForm({ initialData }: Props) {
                                         label="SCOP (Aquecimento)"
                                         type="number"
                                         step="0.01"
-                                        register={register("scop" as any)}
-                                        error={(errors as any).scop}
+                                        register={register("scop")}
+                                        error={errors.scop}
                                         placeholder="Opcional"
                                         className="font-mono"
                                     />
@@ -326,8 +330,8 @@ export function EquipmentForm({ initialData }: Props) {
                                             label="COP"
                                             type="number"
                                             step="0.01"
-                                            register={register("cop" as any)}
-                                            error={(errors as any).cop}
+                                            register={register("cop")}
+                                            error={errors.cop}
                                             placeholder="Só se SEER/SCOP vazios"
                                             className="font-mono"
                                         />
@@ -340,32 +344,32 @@ export function EquipmentForm({ initialData }: Props) {
                                 <>
                                     <FormSelect
                                         label="Energia"
-                                        register={register("energia" as any)}
+                                        register={register("energia")}
                                         options={CaldeiraFormSchema.shape.energia.unwrap().unwrap().options}
-                                        error={(errors as any).energia}
+                                        error={errors.energia}
                                     />
                                     <FormInput
                                         label="Potência (kW)"
                                         type="number"
                                         step="0.01"
-                                        register={register("potencia" as any)}
-                                        error={(errors as any).potencia}
+                                        register={register("potencia")}
+                                        error={errors.potencia}
                                         className="font-mono"
                                     />
                                     <FormInput
                                         label="Rendimento Base (%)"
                                         type="number"
                                         step="0.1"
-                                        register={register("rendimentoBase" as any)}
-                                        error={(errors as any).rendimentoBase}
+                                        register={register("rendimentoBase")}
+                                        error={errors.rendimentoBase}
                                         className="font-mono"
                                     />
                                     <FormInput
                                         label="Rendimento Corrigido (%)"
                                         type="number"
                                         step="0.1"
-                                        register={register("rendimentoCorrigido" as any)}
-                                        error={(errors as any).rendimentoCorrigido}
+                                        register={register("rendimentoCorrigido")}
+                                        error={errors.rendimentoCorrigido}
                                         className="font-mono"
                                     />
                                 </>
@@ -376,16 +380,16 @@ export function EquipmentForm({ initialData }: Props) {
                                 <>
                                     <FormSelect
                                         label="Energia"
-                                        register={register("energia" as any)}
+                                        register={register("energia")}
                                         options={BombaCalorFormSchema.shape.energia.unwrap().unwrap().options}
-                                        error={(errors as any).energia}
+                                        error={errors.energia}
                                     />
                                     <FormInput
                                         label="Volume (litros)"
                                         type="number"
                                         step="0.1"
-                                        register={register("volume" as any)}
-                                        error={(errors as any).volume}
+                                        register={register("volume")}
+                                        error={errors.volume}
                                         placeholder="Opcional"
                                         className="font-mono"
                                     />
@@ -393,32 +397,32 @@ export function EquipmentForm({ initialData }: Props) {
                                         label="Potência (kW)"
                                         type="number"
                                         step="0.01"
-                                        register={register("potencia" as any)}
-                                        error={(errors as any).potencia}
+                                        register={register("potencia")}
+                                        error={errors.potencia}
                                         className="font-mono"
                                     />
                                     <FormInput
                                         label="Rendimento Base"
                                         type="number"
                                         step="0.01"
-                                        register={register("rendimentoBase" as any)}
-                                        error={(errors as any).rendimentoBase}
+                                        register={register("rendimentoBase")}
+                                        error={errors.rendimentoBase}
                                         className="font-mono"
                                     />
                                     <FormInput
                                         label="Rendimento Corrigido"
                                         type="number"
                                         step="0.01"
-                                        register={register("rendimentoCorrigido" as any)}
-                                        error={(errors as any).rendimentoCorrigido}
+                                        register={register("rendimentoCorrigido")}
+                                        error={errors.rendimentoCorrigido}
                                         className="font-mono"
                                     />
                                     <FormInput
                                         label="COP"
                                         type="number"
                                         step="0.01"
-                                        register={register("cop" as any)}
-                                        error={(errors as any).cop}
+                                        register={register("cop")}
+                                        error={errors.cop}
                                         className="font-mono"
                                     />
                                 </>
