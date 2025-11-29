@@ -96,7 +96,8 @@ export async function createEquipment(data: Omit<Equipment, "id" | "createdAt" |
     } catch (error) {
         console.error("Error in createEquipment:", error);
         if (error instanceof z.ZodError) {
-            throw new Error(`Erro de validação: ${error.errors.map((e) => e.message).join(", ")}`);
+            const issues = error.issues || (error as any).errors;
+            throw new Error(`Erro de validação: ${issues.map((e: any) => e.message).join(", ")}`);
         }
         throw error;
     }
@@ -171,7 +172,8 @@ export async function updateEquipment(id: string, data: Partial<Equipment>) {
     } catch (error) {
         console.error("Error in updateEquipment:", error);
         if (error instanceof z.ZodError) {
-            throw new Error(`Erro de validação: ${error.errors.map((e) => e.message).join(", ")}`);
+            const issues = error.issues || (error as any).errors;
+            throw new Error(`Erro de validação: ${issues.map((e: any) => e.message).join(", ")}`);
         }
         throw error;
     }
